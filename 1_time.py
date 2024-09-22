@@ -13,14 +13,17 @@ cap = cv2.VideoCapture(r'D:\video\32.31.250.108\20240501_20240501135236_20240501
 # 获取视频的宽度、高度和帧率
 w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
-# 创建视频写入器，用于输出处理后的视频
-video_writer = cv2.VideoWriter("out.avi",
-                               cv2.VideoWriter_fourcc(*'mp4v'),
-                               fps,
-                               (w, h))
+# # 创建视频写入器，用于输出处理后的视频
+# video_writer = cv2.VideoWriter("out.avi",
+#                                cv2.VideoWriter_fourcc(*'mp4v'),
+#                                fps,
+#                                (w, h))
 
 # 设置测速线段的两个端点
-line_pts = [(0, 380), (1640, 380)]
+line_pts = [(0, 390), (1640, 390)]
+
+# #第四点
+# line_pts = [(0, 190), (1640, 190)]
 
 # 初始化速度估计器
 speed_obj = speed_estimation.SpeedEstimator()
@@ -28,6 +31,7 @@ speed_obj = speed_estimation.SpeedEstimator()
 speed_obj.set_args(reg_pts=line_pts,
                    names=names,
                    view_img=True)
+
 
 # 循环读取视频帧
 while cap.isOpened():
@@ -37,11 +41,12 @@ while cap.isOpened():
     if not success:
         break
     tracks = model.track(im0, persist=True, show=False)
-    im0 = speed_obj.estimate_speed(im0, tracks)
-    video_writer.write(im0)
+    im0 = speed_obj.estimate_speed(im0, tracks) # 这里估计速度并更新图像
+
+    # video_writer.write(im0)
 
 # 释放视频读取器和写入器
 cap.release()
-video_writer.release()
+# video_writer.release()
 # 销毁所有OpenCV窗口
 cv2.destroyAllWindows()
